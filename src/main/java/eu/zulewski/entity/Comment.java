@@ -20,7 +20,7 @@ public class Comment {
     private String text;
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
-    private Instant createdDate;
+    private Instant created;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }
