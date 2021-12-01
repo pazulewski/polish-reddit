@@ -4,6 +4,7 @@ import eu.zulewski.dto.RegisterRequest;
 import eu.zulewski.entity.NotificationEmail;
 import eu.zulewski.entity.User;
 import eu.zulewski.entity.VerificationToken;
+import eu.zulewski.exception.SpringRedditException;
 import eu.zulewski.repository.UserRepository;
 import eu.zulewski.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,5 +53,18 @@ public class AuthService {
         verificationTokenRepository.save(verificationToken);
 
         return token;
+    }
+
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        verificationToken.orElseThrow(() -> new SpringRedditException("Invalid Token"));
+        enableUser(verificationToken.get());
+    }
+
+    private void enableUser(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new SpringRedditException("User " + username + "not found"));
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 }
