@@ -1,6 +1,7 @@
 package eu.zulewski.service;
 
 import eu.zulewski.dto.RegisterRequest;
+import eu.zulewski.entity.NotificationEmail;
 import eu.zulewski.entity.User;
 import eu.zulewski.entity.VerificationToken;
 import eu.zulewski.repository.UserRepository;
@@ -20,6 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final MailService mailService;
 
     @Transactional
     public void singup(RegisterRequest registerRequest) {
@@ -32,7 +34,11 @@ public class AuthService {
 
         userRepository.save(user);
 
-        generateVerificationToken(user);
+        String token = generateVerificationToken(user);
+        mailService.sentMail(new NotificationEmail(
+                "Please activate your account", user.getEmail(),
+                "Thank you for signing. Click url below to activate your account: " +
+                "http://localhost:8080/api/auth/accountVerification/" + token));
     }
 
     private String generateVerificationToken(User user) {
