@@ -1,6 +1,10 @@
 package eu.zulewski.controller;
 
 import eu.zulewski.dto.RegisterRequest;
+import eu.zulewski.service.AuthService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,8 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@AllArgsConstructor
 public class AuthController {
 
+    private final AuthService authService;
+
     @PostMapping("/singup")
-    public void singup(@RequestBody RegisterRequest registerRequest) {}
+    public ResponseEntity<String> singup(@RequestBody RegisterRequest registerRequest) {
+        authService.singup(registerRequest);
+        return new ResponseEntity<>("User Registration Succesful", HttpStatus.OK);
+    }
 }

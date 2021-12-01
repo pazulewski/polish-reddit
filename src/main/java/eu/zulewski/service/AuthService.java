@@ -36,9 +36,10 @@ public class AuthService {
 
         String token = generateVerificationToken(user);
         mailService.sentMail(new NotificationEmail(
-                "Please activate your account", user.getEmail(),
-                "Thank you for signing. Click url below to activate your account: " +
-                "http://localhost:8080/api/auth/accountVerification/" + token));
+                "Aktywacja konta w RedditPL", user.getEmail(),
+                "Witaj w gronie redditowiczów :) " +
+                        "Kliknij w link, aby aktywować swoje konto: " +
+                        "http://localhost:8080/api/auth/accountVerification/" + token));
     }
 
     private String generateVerificationToken(User user) {
