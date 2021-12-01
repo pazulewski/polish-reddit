@@ -1,5 +1,6 @@
 package eu.zulewski.controller;
 
+import eu.zulewski.dto.LoginRequest;
 import eu.zulewski.dto.RegisterRequest;
 import eu.zulewski.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,11 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable String token) {
         authService.verifyAccount(token);
         return new ResponseEntity<>("Account activated", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public void login(@RequestBody LoginRequest loginRequest) {
+        authService.login(loginRequest);
     }
 
 }

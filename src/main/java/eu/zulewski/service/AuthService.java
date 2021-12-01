@@ -1,5 +1,6 @@
 package eu.zulewski.service;
 
+import eu.zulewski.dto.LoginRequest;
 import eu.zulewski.dto.RegisterRequest;
 import eu.zulewski.entity.NotificationEmail;
 import eu.zulewski.entity.User;
@@ -8,6 +9,8 @@ import eu.zulewski.exception.SpringRedditException;
 import eu.zulewski.repository.UserRepository;
 import eu.zulewski.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public void singup(RegisterRequest registerRequest) {
@@ -66,5 +70,10 @@ public class AuthService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new SpringRedditException("User " + username + " not found"));
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    public void login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(), loginRequest.getPassword()));
     }
 }
