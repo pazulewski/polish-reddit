@@ -1,5 +1,6 @@
 package eu.zulewski.controller;
 
+import eu.zulewski.dto.AuthenticationResponse;
 import eu.zulewski.dto.LoginRequest;
 import eu.zulewski.dto.RegisterRequest;
 import eu.zulewski.service.AuthService;
@@ -28,8 +29,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest) {
-        authService.login(loginRequest);
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 
 }

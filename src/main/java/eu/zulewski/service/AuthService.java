@@ -1,5 +1,6 @@
 package eu.zulewski.service;
 
+import eu.zulewski.dto.AuthenticationResponse;
 import eu.zulewski.dto.LoginRequest;
 import eu.zulewski.dto.RegisterRequest;
 import eu.zulewski.entity.NotificationEmail;
@@ -8,9 +9,12 @@ import eu.zulewski.entity.VerificationToken;
 import eu.zulewski.exception.SpringRedditException;
 import eu.zulewski.repository.UserRepository;
 import eu.zulewski.repository.VerificationTokenRepository;
+import eu.zulewski.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,7 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void singup(RegisterRequest registerRequest) {
@@ -72,8 +77,11 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+    public AuthenticationResponse login(LoginRequest loginRequest) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        String token = jwtProvider.generateToken(authenticate);
+        return new AuthenticationResponse(token, loginRequest.getUsername());
     }
 }
